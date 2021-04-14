@@ -55,16 +55,16 @@ void setup()
   // inicia o lcd com o numero de linhas e colunas
   lcd.begin(16, 2);
 
-  // configura a porta do servo_X
+  // configura a porta do potX e servo_X
   pinMode(potX, INPUT);
   servo_X.attach(sX, 500, 2500);
 
-  // configura a porta do servo_Y
-  pinMode(A1, INPUT);
+  // configura a porta do potY e servo_Y
+  pinMode(potY, INPUT);
   servo_Y.attach(sY, 500, 2500);
 
   // configura a porta do bottao
-  pinMode(1,INPUT);
+  pinMode(btt, INPUT);
 
   // configura a porta do buzzer
   pinMode(bzz, OUTPUT);
@@ -136,10 +136,23 @@ void writeL() {
 }
 
 void sound() {
-  //sinal sonoro`
+  //sinal sonoro
   tone(bzz, 1000);
   delay(1000);
   noTone(bzz); 
+}
+
+void contagem() {
+  // contagem regressiva
+  lcd.setCursor(7,1);
+  lcd.print("3");
+  delay(500);
+  lcd.setCursor(7,1);
+  lcd.print("2");
+  delay(500);
+  lcd.setCursor(7,1);
+  lcd.print("1");
+  delay(500);
 }
 
 void checkL() {
@@ -161,21 +174,39 @@ void checkL() {
 
     //som
     sound();
+
+    //acende o led na cor verde
+    verde();
+
+    // avisa inicio
+    contagem();
+
+    // limpa lcd
+    lcd.clear();
     
-    // testa ?
+    // testa se btt nao esta apertado
     while (!(digitalRead(btt) == 1)) {
-      //acende o led na cor verde
-      verde();
-      
-      // printa vai filhao!
+      // avisa o inicio
       lcd.setCursor(0,0);
-      lcd.print("vai filhao!");
+      lcd.print("Valendo!");
+      
+      // atualiza
+      updateL();
+
+      // move
+      moveS();
     }
+    // limpa o lcd
+    lcd.clear();
+    
+    // anuncia fim
+    lcd.setCursor(0,0);
+    lcd.print("Fim!");
+   
+    // acende vermelho
+    vermelho();
+    
     // som
     sound();
-
-    // espera um pouco para melhorar a experiencia do usuario
-    delay(700);
-  
   }
 }
