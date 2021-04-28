@@ -72,23 +72,11 @@ void setup()
 
 void loop()
 {
-  // acende o led na cor vermelha
-  vermelho();
-  
-  // atualiza 
-  updateL();
+  // requerimentos para o jogo
+  pre_jogo();
 
-  // move 
-  moveS();
-
-  // printa
-  writeL();
-
-  // atualiza
-  updateL();
-
-  // testa
-  checkL();
+  // testa leituras e inicia jogo caso motores em 511
+  jogo();
   
   // espera um pouco para melhorar a performace da simulacao
   delay(10);
@@ -108,19 +96,19 @@ void verde() {
   analogWrite(led_B, 0);
 }
 
-void updateL() {
-  // atualiza as leituras
+void atualiza_leituras() {
+  // atualiza as leituras basedo nas entradas
   l_potX = analogRead(potX);
   l_potY = analogRead(potY);
 }
 
-void moveS() {
+void move_servos() {
   // move os servos baseado nas leituras
   servo_X.write(map(l_potX, 0, 1023, 0, 180));
   servo_Y.write(map(l_potY, 0, 1023, 0, 180));
 }
 
-void writeL() {
+void mostra_leituras() {
   // printa as leituras
   lcd.setCursor(3,1);
   lcd.print(l_potX);
@@ -135,7 +123,7 @@ void writeL() {
   lcd.print("Posicione em 511");
 }
 
-void sound() {
+void som() {
   //sinal sonoro
   tone(bzz, 1000);
   delay(1000);
@@ -144,18 +132,31 @@ void sound() {
 
 void contagem() {
   // contagem regressiva
-  lcd.setCursor(7,1);
-  lcd.print("3");
-  delay(500);
-  lcd.setCursor(7,1);
-  lcd.print("2");
-  delay(500);
-  lcd.setCursor(7,1);
-  lcd.print("1");
-  delay(500);
+  for (int i = 3; i >= 0; i--) {
+    lcd.setCursor(7,1);
+    lcd.print(i);
+    delay(500);
+  }
 }
 
-void checkL() {
+void pre_jogo() {
+  // acende o led na cor vermelha
+  vermelho();
+  
+  // atualiza 
+  atualiza_leituras();
+
+  // move 
+  move_servos();
+
+  // printa
+  mostra_leituras();
+
+  // atualiza
+  atualiza_leituras();
+}
+
+void jogo() {
   // testa se servos estao na posicao certa
   if (l_potX == 511 && l_potY == 511) {
     // limpa o lcd
@@ -173,7 +174,7 @@ void checkL() {
     lcd.clear();
 
     //som
-    sound();
+    som();
 
     //acende o led na cor verde
     verde();
@@ -191,10 +192,10 @@ void checkL() {
       lcd.print("Valendo!");
       
       // atualiza
-      updateL();
+      atualiza_leituras();
 
       // move
-      moveS();
+      move_servos();
     }
     // limpa o lcd
     lcd.clear();
@@ -207,6 +208,6 @@ void checkL() {
     vermelho();
     
     // som
-    sound();
+    som();
   }
 }
